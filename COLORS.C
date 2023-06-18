@@ -8,8 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-MRESULT EXPENTRY ColorProc( HWND hwndDlg, USHORT msg, MPARAM mp1, MPARAM mp2 );
-MRESULT EXPENTRY fnwpColorSample( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 );
+MRESULT EXPENTRY ColorProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARAM mp2 );
+MRESULT EXPENTRY fnwpColorSample( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 );
 /***************** Start of main procedure ***************************/
 SHORT RGBColors[3];
 LONG  Color,Colors[100];
@@ -19,10 +19,10 @@ HAB hab;
 /*                                                                   */
 /*  FUNCTION: main                                                   */
 /*                                                                   */
-VOID cdecl main( VOID )
+int main( int argc, char *argv[] )
 {
   HMQ     hmq;                        /* Message queue handle         */
-  hab   = WinInitialize( NULL );      /* Initialize PM                */
+  hab   = WinInitialize( 0 );         /* Initialize PM                */
   hmq   = WinCreateMsgQueue( hab, 0 );/* Create application msg queue */
   /* Invoke a modal dialog with the main window frame as owner       */
   WinRegisterClass( hab,              /* Register a second class      */
@@ -33,26 +33,29 @@ VOID cdecl main( VOID )
   WinDlgBox( HWND_DESKTOP,              /* Parent                    */
              HWND_DESKTOP,              /* Owner                     */
              ColorProc,                 /* Address of dialog proc    */
-             NULL,                      /* Module handle             */
+             NULLHANDLE,                /* Module handle             */
              ID_COLORS,                 /* ID of dialog in resource  */
              NULL );                    /* Initialization data       */
   WinDestroyMsgQueue( hmq );
   WinTerminate( hab );
-  DosExit( 1, 0 );
+  return 0;
 }
 /*********************************************************************/
 
-MRESULT EXPENTRY ColorProc( HWND hwndDlg, USHORT msg, MPARAM mp1, MPARAM mp2 )
+MRESULT EXPENTRY ColorProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARAM mp2 )
 {
-  USHORT Index;
+  ULONG Index;
   HPOINTER Hptr;
 #define SCROLLPAGE 16
   SHORT Slider;
+  ULONG SliderId;
+
   switch (msg)
   {
 case WM_VSCROLL:
-     Slider= (SHORT) WinSendDlgItemMsg(hwndDlg,SHORT1FROMMP(mp1),
-                                      SBM_QUERYPOS,NULL,NULL);
+     SliderId = (ULONG)SHORT1FROMMP(mp1);
+     Slider= (SHORT) WinSendDlgItemMsg(hwndDlg,SliderId,
+                                      SBM_QUERYPOS,MPVOID,MPVOID);
 
      switch (SHORT2FROMMP(mp2))
        {
@@ -74,34 +77,34 @@ case WM_VSCROLL:
        default:
        break;
        }
-       RGBColors[SHORT1FROMMP(mp1)-ID_COLOR_BASE]=255-Slider;
-       WinSendDlgItemMsg(hwndDlg,SHORT1FROMMP(mp1),
-                         SBM_SETPOS,(MPARAM)Slider,NULL);
-       WinInvalidateRect(WinWindowFromID(hwndDlg,ID_MIX),(PRECTL)NULL,TRUE);
+       RGBColors[SliderId-ID_COLOR_BASE]=255-Slider;
+       WinSendDlgItemMsg(hwndDlg,SliderId,
+                         SBM_SETPOS,MPFROMSHORT(Slider),MPVOID);
+       WinInvalidateRect(WinWindowFromID(hwndDlg,ID_MIX),NULL,TRUE);
        break;
     case WM_INITDLG:
-       WinLoadMenu(hwndDlg,NULL,ID_MENU);
-       WinSendMsg(hwndDlg,WM_UPDATEFRAME,(MPARAM)FCF_MENU,NULL);
-       Hptr=WinLoadPointer(HWND_DESKTOP,NULL,ID_COLORS);
+       WinLoadMenu(hwndDlg,NULLHANDLE,ID_MENU);
+       WinSendMsg(hwndDlg,WM_UPDATEFRAME,MPFROMLONG(FCF_MENU),MPVOID);
+       Hptr=WinLoadPointer(HWND_DESKTOP,NULLHANDLE,ID_COLORS);
        if (Hptr==(HPOINTER)NULL) {
          DosBeep(400,100);
        } /* endif */
-       WinSendMsg(hwndDlg,WM_SETICON,(MPARAM)Hptr,NULL);
+       WinSendMsg(hwndDlg,WM_SETICON,MPFROMLONG(Hptr),MPVOID);
        WinSendDlgItemMsg(hwndDlg,ID_RED,
-                  SBM_SETSCROLLBAR,(MPARAM)255,MPFROM2SHORT(0,255));
+                  SBM_SETSCROLLBAR,MPFROMSHORT(255),MPFROM2SHORT(0,255));
        WinSendDlgItemMsg(hwndDlg,ID_BLUE,
-                  SBM_SETSCROLLBAR,(MPARAM)255,MPFROM2SHORT(0,255));
+                  SBM_SETSCROLLBAR,MPFROMSHORT(255),MPFROM2SHORT(0,255));
        WinSendDlgItemMsg(hwndDlg,ID_GREEN,
-                  SBM_SETSCROLLBAR,(MPARAM)255,MPFROM2SHORT(0,255));
+                  SBM_SETSCROLLBAR,MPFROMSHORT(255),MPFROM2SHORT(0,255));
       for (Index=0;Index<NUM_PMCOLORS;Index++) {
           Color=WinQuerySysColor(HWND_DESKTOP,PMColors[Index].SystemColor,0L);
           PMColors[Index].Red  =LOUCHAR(HIUSHORT(Color));
           PMColors[Index].Green=HIUCHAR(LOUSHORT(Color));
           PMColors[Index].Blue =LOUCHAR(LOUSHORT(Color));
           WinSendDlgItemMsg(hwndDlg,ID_LIST, LM_INSERTITEM,
-                            (MPARAM)LIT_END, MPFROMP(PMColors[Index].Label) );
+                            MPFROMSHORT(LIT_END), MPFROMP(PMColors[Index].Label) );
       } /* endfor */
-       WinSendDlgItemMsg(hwndDlg,ID_LIST, LM_SETTOPINDEX,(MPARAM)1,(MPARAM)NULL);
+       WinSendDlgItemMsg(hwndDlg,ID_LIST, LM_SETTOPINDEX,MPFROMSHORT(1),MPVOID);
       break;
     case WM_CONTROL:
       switch( SHORT2FROMMP( mp1 ) )
@@ -109,21 +112,21 @@ case WM_VSCROLL:
        case LN_ENTER:                           /* Catch double click on */
           Index=(USHORT)WinSendMsg( WinWindowFromID(hwndDlg,ID_LIST), /* list box item, and    */
                       LM_QUERYSELECTION,     /* get current selection */
-                      (MPARAM)LIT_FIRST,
-                      (MPARAM)NULL );
+                      MPFROMSHORT(LIT_FIRST),
+                      MPVOID );
           Color=WinQuerySysColor(HWND_DESKTOP,PMColors[Index].SystemColor,0L);
           PMColors[Index].Red  =LOUCHAR(HIUSHORT(Color));
           PMColors[Index].Green=HIUCHAR(LOUSHORT(Color));
           PMColors[Index].Blue =LOUCHAR(LOUSHORT(Color));
           RGBColors[RED]=PMColors[Index].Red;
           WinSendDlgItemMsg(hwndDlg,ID_RED, SBM_SETPOS,     /* get current selection */
-                      (MPARAM)(255-RGBColors[RED]), (MPARAM)NULL );
+                      MPFROMSHORT(255-RGBColors[RED]), (MPARAM)NULL );
           RGBColors[GREEN]=PMColors[Index].Green;
           WinSendDlgItemMsg(hwndDlg,ID_GREEN, SBM_SETPOS,     /* get current selection */
-                      (MPARAM)(255-RGBColors[GREEN]), (MPARAM)NULL );
+                      MPFROMSHORT(255-RGBColors[GREEN]), (MPARAM)NULL );
           RGBColors[BLUE]=PMColors[Index].Blue;
           WinSendDlgItemMsg(hwndDlg,ID_BLUE, SBM_SETPOS,     /* get current selection */
-                      (MPARAM)(255-RGBColors[BLUE]), (MPARAM)NULL );
+                      MPFROMSHORT(255-RGBColors[BLUE]), MPVOID );
           WinInvalidateRect(WinWindowFromID(hwndDlg,ID_MIX),(PRECTL)NULL,TRUE);
           break;
         default:
@@ -146,8 +149,8 @@ case WM_VSCROLL:
           PMColors[Index].Red  =LOUCHAR(HIUSHORT(Color));
           PMColors[Index].Green=HIUCHAR(LOUSHORT(Color));
           PMColors[Index].Blue =LOUCHAR(LOUSHORT(Color));
-          sprintf(ProfileColors,"%3.3d %3.3d %3.3d\0",PMColors[Index].Red,PMColors[Index].Green,PMColors[Index].Blue);
-          WinWriteProfileData( hab, "PM_Colors", PMColors[Index].Key , ProfileColors, 12);
+          sprintf(ProfileColors,"%3.3d %3.3d %3.3d",PMColors[Index].Red,PMColors[Index].Green,PMColors[Index].Blue);
+          PrfWriteProfileData( HINI_SYSTEMPROFILE, "PM_Colors", PMColors[Index].Key , ProfileColors, 12);
           return FALSE;
           break;
         case ID_EXIT:    /* Enter key pressed or pushbutton selected  */
@@ -168,14 +171,14 @@ case WM_VSCROLL:
 
 /*********************************************************************/
 
-MRESULT EXPENTRY fnwpColorSample( HWND hwnd, USHORT msg,
+MRESULT EXPENTRY fnwpColorSample( HWND hwnd, ULONG msg,
                                   MPARAM mp1, MPARAM mp2 )
 {
   HPS    hps;
   RECTL  rcl,rcl1;
   if( msg == WM_PAINT )
   {
-       hps = WinBeginPaint( hwnd, NULL, &rcl );
+       hps = WinBeginPaint( hwnd, NULLHANDLE, &rcl );
        Color=RGBColors[BLUE]+(256L*(LONG)RGBColors[GREEN])+(65536L*(LONG)RGBColors[RED]);
        GpiCreateLogColorTable( hps, LCOL_RESET,
                               LCOLF_RGB,0L,1L,&Color);
@@ -211,4 +214,4 @@ MRESULT EXPENTRY fnwpColorSample( HWND hwnd, USHORT msg,
     /* Pass all other messages to the default window procedure       */
     return WinDefWindowProc( hwnd, msg, mp1, mp2 );
 }
-
+

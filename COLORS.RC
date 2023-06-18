@@ -1,14 +1,14 @@
 /*********** COLORS C Program Resource Script File (.RC)        **************/
 #include <os2.h>
 #include "colors.h"
-ICON       ID_COLORS PRELOAD colors.ico
+ICON       ID_COLORS LOADONCALL MOVEABLE DISCARDABLE colors.ico
 
-ACCELTABLE ID_COLORS PRELOAD
+ACCELTABLE ID_COLORS LOADONCALL MOVEABLE DISCARDABLE
 BEGIN
   VK_F3, ID_EXIT, VIRTUALKEY
 END
 
-MENU       ID_MENU PRELOAD
+MENU       ID_MENU LOADONCALL MOVEABLE DISCARDABLE
 BEGIN
   MENUITEM "E~xit \tF3",        ID_EXIT , MIS_TEXT
 END
@@ -16,4 +16,4 @@ END
 
 rcinclude colors.dlg
 /*********** COLORS C Program Resource Script File (.RC)        **************/
-
+

@@ -4,17 +4,7 @@
 ;  module to the LINKER.
 
 
-NAME    colors   WINDOWAPI
-
+NAME    colors
 DESCRIPTION 'OS/2 Presentation Manager Colors Program'
 
-STUB    'OS2STUB.EXE'
-
-DATA    MULTIPLE
-
-STACKSIZE   4096
-HEAPSIZE    4096
-
-PROTMODE
-
-
+STACKSIZE   65536
