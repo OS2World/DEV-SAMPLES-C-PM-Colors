@@ -1,10 +1,12 @@
-;******* COLORS  Module Definition File (.DEF) ********
+;-------------------------------------
+; COLORS.DEF module definition file
 ;
 ;  The module definition file supplies extra information about the program
 ;  module to the LINKER.
+;-------------------------------------
 
+NAME    COLORS	WINDOWAPI
 
-NAME    colors
-DESCRIPTION 'OS/2 Presentation Manager Colors Program'
+DESCRIPTION '@#OS2World:1.02#@##1## 17 Jun 2023 20:00:00     ARCAOS-507::::::v1.01@@OS/2 Presentation Manager Colors Program'
 
 STACKSIZE   65536

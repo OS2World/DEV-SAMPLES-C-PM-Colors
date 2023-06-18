@@ -1,3 +1,7 @@
+/*------------------------
+   COLORS.H header file
+  ------------------------*/
+  
 #define RED         0
 #define BLUE        1
 #define GREEN       2
@@ -55,4 +59,3 @@ COLORDEF  PMColors[]= {
      {  SYSCLR_HELPBACKGROUND          , "HelpBackground"        ,"HelpBackground"   ,0 ,0 ,0 },
      {  SYSCLR_HELPTEXT                , "HelpText"              ,"HelpText"         ,0 ,0 ,0 },
      {  SYSCLR_HELPHILITE              , "HelpHilite"            ,"HelpHilite"       ,0 ,0 ,0 } };
-

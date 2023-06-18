@@ -1,4 +1,7 @@
-/*********** COLORS C Program Resource Script File (.RC)        **************/
+/*----------------------------------
+   COLORS.RC resource script file
+  ----------------------------------*/
+
 #include <os2.h>
 #include "colors.h"
 ICON       ID_COLORS LOADONCALL MOVEABLE DISCARDABLE colors.ico

@@ -1,4 +1,6 @@
-/************** Dialog2 C Sample Program Source Code File (.C) ****************/
+/*----------------------------------------
+   COLORS.C -- Dialog2 C Sample Program Source Code File (.C)
+  ----------------------------------------*/
 #define INCL_GPI
 #define INCL_BASE
 #define INCL_WIN
@@ -26,7 +28,7 @@ int main( int argc, char *argv[] )
   hmq   = WinCreateMsgQueue( hab, 0 );/* Create application msg queue */
   /* Invoke a modal dialog with the main window frame as owner       */
   WinRegisterClass( hab,              /* Register a second class      */
-                    "Color",          /*  for color sample child      */
+                    (PCSZ) "Color",          /*  for color sample child      */
                     fnwpColorSample,  /*  window of the Client Area   */
                     0L,
                     0 );
@@ -47,14 +49,14 @@ MRESULT EXPENTRY ColorProc( HWND hwndDlg, ULONG msg, MPARAM mp1, MPARAM mp2 )
   ULONG Index;
   HPOINTER Hptr;
 #define SCROLLPAGE 16
-  SHORT Slider;
+  LONG Slider;
   ULONG SliderId;
 
   switch (msg)
   {
 case WM_VSCROLL:
      SliderId = (ULONG)SHORT1FROMMP(mp1);
-     Slider= (SHORT) WinSendDlgItemMsg(hwndDlg,SliderId,
+     Slider= (LONG) WinSendDlgItemMsg(hwndDlg,SliderId,
                                       SBM_QUERYPOS,MPVOID,MPVOID);
 
      switch (SHORT2FROMMP(mp2))
@@ -110,7 +112,7 @@ case WM_VSCROLL:
       switch( SHORT2FROMMP( mp1 ) )
       {
        case LN_ENTER:                           /* Catch double click on */
-          Index=(USHORT)WinSendMsg( WinWindowFromID(hwndDlg,ID_LIST), /* list box item, and    */
+          Index=(ULONG)WinSendMsg( WinWindowFromID(hwndDlg,ID_LIST), /* list box item, and    */
                       LM_QUERYSELECTION,     /* get current selection */
                       MPFROMSHORT(LIT_FIRST),
                       MPVOID );
@@ -137,7 +139,7 @@ case WM_VSCROLL:
       switch( SHORT1FROMMP( mp1 ) )
       {
         case DID_OK:    /* Enter key pressed or pushbutton selected  */
-          Index=(USHORT)WinSendMsg( WinWindowFromID(hwndDlg,ID_LIST), /* list box item, and    */
+          Index=(ULONG)WinSendMsg( WinWindowFromID(hwndDlg,ID_LIST), /* list box item, and    */
                       LM_QUERYSELECTION,     /* get current selection */
                       (MPARAM)LIT_FIRST, (MPARAM)NULL );
           if (Index==LIT_NONE) break;
@@ -150,7 +152,7 @@ case WM_VSCROLL:
           PMColors[Index].Green=HIUCHAR(LOUSHORT(Color));
           PMColors[Index].Blue =LOUCHAR(LOUSHORT(Color));
           sprintf(ProfileColors,"%3.3d %3.3d %3.3d",PMColors[Index].Red,PMColors[Index].Green,PMColors[Index].Blue);
-          PrfWriteProfileData( HINI_SYSTEMPROFILE, "PM_Colors", PMColors[Index].Key , ProfileColors, 12);
+          PrfWriteProfileData( HINI_SYSTEMPROFILE, (PCSZ) "PM_Colors", (PCSZ) PMColors[Index].Key , ProfileColors, 12);
           return FALSE;
           break;
         case ID_EXIT:    /* Enter key pressed or pushbutton selected  */
