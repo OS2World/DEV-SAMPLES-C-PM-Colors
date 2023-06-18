@@ -15,6 +15,7 @@ COMPILE TOOLS
 AUTHORS
 ===============
 * Martin Iturbide (2023)
+* Lars Erdmann
 * IBM
 
 LINKS
